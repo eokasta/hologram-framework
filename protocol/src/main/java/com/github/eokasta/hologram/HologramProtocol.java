@@ -2,7 +2,6 @@ package com.github.eokasta.hologram;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -29,15 +28,11 @@ public final class HologramProtocol {
     private static final int DEFAULT_ENTITY_TYPE_ID, LEGACY_ENTITY_TYPE_ID, MINECRAFT_MINOR_VERSION;
     private static final EntityType ENTITY_TYPE;
 
-    protected static final ProtocolManager PROTOCOL_MANAGER;
-
     static {
         DEFAULT_ENTITY_TYPE_ID = 1;
         ENTITY_TYPE = EntityType.ARMOR_STAND;
         LEGACY_ENTITY_TYPE_ID = ENTITY_TYPE.getTypeId();
         MINECRAFT_MINOR_VERSION = MinecraftVersion.getCurrentVersion().getMinor();
-
-        PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
     }
 
     public static void sendDestroyPacket(
@@ -45,7 +40,7 @@ public final class HologramProtocol {
           @NotNull Player target
     ) {
         final PacketContainer packet =
-              PROTOCOL_MANAGER.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+              ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 
         if (isLegacyMinecraftVersion())
             packet.getIntegerArrays().write(0, new int[]{entityId});
@@ -61,7 +56,7 @@ public final class HologramProtocol {
           @NotNull Player target,
           @NotNull DataWatcherHolder dataWatcherHolder
     ) {
-        final PacketContainer packet = PROTOCOL_MANAGER.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+        final PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 
         if (isLegacyMinecraftVersion()) {
             packet.getIntegers().write(0, entityId)
@@ -78,7 +73,7 @@ public final class HologramProtocol {
 
             packet.getDataWatcherModifier().write(0, dataWatcherHolder.getDataWatcher());
         } else {
-            packet.getEntityTypeModifier().write(0, ENTITY_TYPE);
+            packet.getIntegers().write(0, LEGACY_ENTITY_TYPE_ID);
 
             packet.getIntegers().write(0, entityId)
                   .write(1, DEFAULT_ENTITY_TYPE_ID);
@@ -95,91 +90,83 @@ public final class HologramProtocol {
 
     public static void sendMetadataCreatePacket(
           int entityId,
-          @NotNull String customName,
           @NotNull Player target,
+          @NotNull String customName,
           boolean visibleCustomName,
           boolean visibleArmorStand,
           boolean small,
-          boolean gravity,
           boolean arms,
           boolean noBasePlate,
           boolean marker
     ) {
-        final PacketContainer metadataPacket =
+        final PacketContainer packet =
               ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        metadataPacket.getIntegers().write(0, entityId);
+        packet.getIntegers().write(0, entityId);
 
         final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
         byte flags = 0;
-        if (small)
-            flags |= 0x01;
-
-        if (gravity)
-            flags |= 0x02;
-
-        if (arms)
-            flags |= 0x04;
-
-        if (noBasePlate)
-            flags |= 0x08;
-
-        if (marker)
-            flags |= 0x16;
-
         if (isLegacyMinecraftVersion()) {
             if (!visibleArmorStand)
                 dataWatcher.setObject(0, (byte) 0x20);
 
             dataWatcher.setObject(2, customName);
             dataWatcher.setObject(3, (byte) (visibleCustomName ? 1 : 0));
+
+            if (small)
+                flags |= 0x01;
+
+            if (arms)
+                flags |= 0x04;
+
+            if (noBasePlate)
+                flags |= 0x08;
+
+            if (marker)
+                flags |= 0x16;
+
             dataWatcher.setObject(10, flags);
         } else {
-            dataWatcher.setObject(
-                  new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)),
-                  (byte) 0x20
-            );
-
-            dataWatcher.setObject(
-                  new WrappedDataWatcher.WrappedDataWatcherObject(2,
-                        WrappedDataWatcher.Registry.getChatComponentSerializer(true)),
-                  Optional.of(WrappedChatComponent.fromChatMessage(customName)[0].getHandle())
-            );
-
             if (!visibleArmorStand)
+                dataWatcher.setObject(
+                      new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)),
+                      (byte) 0x20
+                );
+
+            if (visibleCustomName) {
+                dataWatcher.setObject(
+                      new WrappedDataWatcher.WrappedDataWatcherObject(2,
+                            WrappedDataWatcher.Registry.getChatComponentSerializer(true)),
+                      Optional.of(WrappedChatComponent.fromChatMessage(customName)[0].getHandle())
+                );
+
                 dataWatcher.setObject(
                       new WrappedDataWatcher.WrappedDataWatcherObject(3,
                             WrappedDataWatcher.Registry.get(Boolean.class)),
                       true
                 );
+            }
+
+            if (small)
+                flags |= 0x01;
+
+            if (arms)
+                flags |= 0x04;
+
+            if (noBasePlate)
+                flags |= 0x08;
+
+            if (marker)
+                flags |= 0x10;
 
             dataWatcher.setObject(
-                  new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)),
+                  new WrappedDataWatcher.WrappedDataWatcherObject(15, WrappedDataWatcher.Registry.get(Byte.class)),
                   flags
             );
+
+            packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
         }
-    }
 
-    public static void sendMetadataTextUpdatePacket(
-          int entityId,
-          @NotNull String customName,
-          @NotNull Player target
-    ) {
-        final PacketContainer metadataPacket =
-              ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        metadataPacket.getIntegers().write(0, entityId);
-
-        final WrappedDataWatcher dataWatcher = new WrappedDataWatcher();
-        if (isLegacyMinecraftVersion())
-            dataWatcher.setObject(2, customName);
-        else
-            dataWatcher.setObject(
-                  new WrappedDataWatcher.WrappedDataWatcherObject(2,
-                        WrappedDataWatcher.Registry.getChatComponentSerializer(true)),
-                  Optional.of(WrappedChatComponent.fromChatMessage(customName)[0].getHandle())
-            );
-
-        metadataPacket.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
-        sendPacket(metadataPacket, target);
+        sendPacket(packet, target);
     }
 
     protected static boolean isLegacyMinecraftVersion() {
@@ -188,7 +175,7 @@ public final class HologramProtocol {
 
     private static void sendPacket(PacketContainer packet, Player target) {
         try {
-            PROTOCOL_MANAGER.sendServerPacket(target, packet);
+            ProtocolLibrary.getProtocolManager().sendServerPacket(target, packet);
         } catch (final InvocationTargetException e) {
             e.printStackTrace();
         }
