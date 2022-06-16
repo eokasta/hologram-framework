@@ -3,6 +3,13 @@ package com.github.eokasta.hologram;
 import com.github.eokasta.hologram.protocol.HologramProtocol;
 import com.github.eokasta.hologram.protocol.PlayerEntityUsePacketListener;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,15 +26,14 @@ public class HologramRegistry implements Iterable<Hologram> {
     private final Plugin plugin;
     private final Set<Hologram> registeredHolograms = new HashSet<>();
 
-    private final AutoUpdateHologramTask updateTask;
-
     public HologramRegistry(@NotNull Plugin plugin, long delay, long period) {
         this.plugin = plugin;
 
-        this.updateTask = new AutoUpdateHologramTask(this);
-        updateTask.initialize(delay, period);
+        new AutoUpdateHologramTask(this).initialize(delay, period);
 
         HologramProtocol.registerPacketListener(new PlayerEntityUsePacketListener(this));
+
+        Bukkit.getPluginManager().registerEvents(new PlayerHologramListener(), plugin);
     }
 
     public HologramRegistry(@NotNull Plugin plugin) {
@@ -61,4 +67,31 @@ public class HologramRegistry implements Iterable<Hologram> {
     public Iterator<Hologram> iterator() {
         return getHolograms().iterator();
     }
+
+    final class PlayerHologramListener implements Listener {
+
+        @EventHandler
+        public void onJoin(PlayerJoinEvent event) {
+            final Player player = event.getPlayer();
+
+            for (Hologram hologram : getHolograms()) {
+                if (!hologram.canSee(player)) continue;
+
+                hologram.show(player);
+            }
+        }
+
+        @EventHandler
+        public void onWorldChange(PlayerChangedWorldEvent event) {
+            final Player player = event.getPlayer();
+
+            for (Hologram hologram : getHolograms()) {
+                if (!hologram.canSee(player)) continue;
+
+                hologram.show(player);
+            }
+        }
+
+    }
+
 }

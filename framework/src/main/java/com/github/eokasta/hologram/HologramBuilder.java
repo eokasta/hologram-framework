@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,22 @@ import java.util.function.Function;
 public class HologramBuilder {
 
     private final List<LineType> lines = new ArrayList<>();
-    private HologramInteractHandler hologramInteractHandler = new HologramInteractHandler();
+    private final HologramInteractHandler hologramInteractHandler = new HologramInteractHandler();
 
-    public HologramBuilder addAction(HologramInteractAction action, Consumer<HologramInteractContext> consumer) {
+    public HologramBuilder addAction(
+          @NotNull HologramInteractAction action,
+          @NotNull Consumer<HologramInteractContext> consumer
+    ) {
         hologramInteractHandler.addAction(action, consumer);
         return this;
+    }
+
+    public HologramBuilder addLeftClickAction(@NotNull Consumer<HologramInteractContext> consumer) {
+        return addAction(HologramInteractAction.LEFT_CLICK, consumer);
+    }
+
+    public HologramBuilder addRightClickAction(@NotNull Consumer<HologramInteractContext> consumer) {
+        return addAction(HologramInteractAction.RIGHT_CLICK, consumer);
     }
 
     public HologramBuilder addLine(@NotNull String text) {
@@ -31,7 +43,11 @@ public class HologramBuilder {
         return addLine(function, String.class);
     }
 
-    private HologramBuilder addLine(@NotNull Object value, Class<?> type) {
+    public HologramBuilder addEmptyLine() {
+        return addLine(null, null);
+    }
+
+    private HologramBuilder addLine(@Nullable Object value, @Nullable Class<?> type) {
         this.lines.add(new LineType(value, type));
         return this;
     }
@@ -95,8 +111,12 @@ public class HologramBuilder {
 
     private AbstractHologramLine createStaticLine(
           @NotNull Hologram hologram,
-          @NotNull Object value
+          Object value
     ) {
+        if (value == null) {
+            return new EmptyHologramLine(hologram);
+        }
+
         if (value instanceof String) {
             final TextHologramLine line = new TextHologramLine(hologram);
             line.setText((String) value);

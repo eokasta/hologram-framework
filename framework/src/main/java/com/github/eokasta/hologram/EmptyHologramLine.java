@@ -1,25 +1,18 @@
 package com.github.eokasta.hologram;
 
 import com.github.eokasta.hologram.protocol.HologramProtocol;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class TextHologramLine extends DynamicHologramLine {
+public class EmptyHologramLine extends DynamicHologramLine {
 
-    @Getter
-    @Setter
-    private String text;
-
-    public TextHologramLine(Hologram hologram) {
+    public EmptyHologramLine(Hologram hologram) {
         super(hologram, HologramSettings.builder()
-                    .visibleArmorStand(false)
-                    .visibleCustomName(true)
-                    .build(),
-              0.26f);
+              .visibleArmorStand(false)
+              .visibleCustomName(false)
+              .build(), 0.26f);
     }
 
     @Override
@@ -30,13 +23,10 @@ public class TextHologramLine extends DynamicHologramLine {
 
     @Override
     protected void update(@NotNull Player player) {
-        final String text =
-              Objects.requireNonNull(applyOrGetValue(this.text, player), "Hologram line text cannot be null.");
-
         HologramProtocol.sendMetadataCreatePacket(
               entityId,
               player,
-              text,
+              "",
               settings.isVisibleCustomName(),
               settings.isVisibleArmorStand(),
               settings.isSmall(),
