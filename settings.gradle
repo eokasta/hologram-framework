@@ -1,0 +1,7 @@
+enableFeaturePreview('VERSION_CATALOGS')
+
+rootProject.name = 'hologram-framework'
+include 'api'
+include 'framework'
+include 'protocol'
+

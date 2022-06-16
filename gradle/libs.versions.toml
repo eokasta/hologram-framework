@@ -1,0 +1,21 @@
+[versions]
+jetbrains-annotations = "22.0.0"
+spigot-api = "1.16.5-R0.1-SNAPSHOT"
+protocol-lib = "4.7.0"
+lombok = "1.18.22"
+
+[libraries.jetbrains-annotations]
+module = "org.jetbrains:annotations"
+version.ref = "jetbrains-annotations"
+
+[libraries.spigot-api]
+module = "org.spigotmc:spigot-api"
+version.ref = "spigot-api"
+
+[libraries.protocol-lib]
+module = "com.comphenix.protocol:ProtocolLib"
+version.ref = "protocol-lib"
+
+[libraries.lombok]
+module = "org.projectlombok:lombok"
+version.ref = "lombok"
