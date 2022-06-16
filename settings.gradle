@@ -1,5 +1,5 @@
 enableFeaturePreview('VERSION_CATALOGS')
 
 rootProject.name = 'hologram-framework'
-include 'framework', 'protocol', 'plugin'
+include 'framework', 'plugin'
 
