@@ -8,19 +8,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @NoArgsConstructor
 public class HologramBuilder {
 
     private final List<LineType> lines = new ArrayList<>();
-    private HologramRegistry registry;
+    private HologramInteractHandler hologramInteractHandler = new HologramInteractHandler();
+
+    public HologramBuilder addAction(HologramInteractAction action, Consumer<HologramInteractContext> consumer) {
+        hologramInteractHandler.addAction(action, consumer);
+        return this;
+    }
 
     public HologramBuilder addLine(@NotNull String text) {
         addLine(text, String.class);
         return this;
     }
 
-    public HologramBuilder addDynamicTextLine(@NotNull BiFunction<AbstractHologramLine, Player, String> function) {
+    public HologramBuilder addDynamicTextLine(@NotNull Function<Player, String> function) {
         return addLine(function, String.class);
     }
 
@@ -32,10 +39,18 @@ public class HologramBuilder {
     public Hologram build() {
         final List<AbstractHologramLine> lines = new ArrayList<>();
         final Hologram hologram = new Hologram(lines);
+        hologram.setInteractHandler(hologramInteractHandler);
 
         this.lines.stream()
               .map(lineType -> resolveLineType(hologram, lineType))
               .forEach(line -> lines.add(0, line));
+
+        return hologram;
+    }
+
+    public Hologram build(@NotNull HologramRegistry registry) {
+        final Hologram hologram = build();
+        registry.registerHologram(hologram);
 
         return hologram;
     }
@@ -50,6 +65,13 @@ public class HologramBuilder {
         if (value instanceof BiFunction)
             return resolveDynamicFunctionType(hologram,
                   (BiFunction<AbstractHologramLine, Player, Object>) value,
+                  lineType.type
+            );
+
+        if (value instanceof Function)
+            return resolveDynamicFunctionType(
+                  hologram,
+                  ($, player) -> ((Function<Player, Object>) value).apply(player),
                   lineType.type
             );
 

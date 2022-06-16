@@ -1,4 +1,4 @@
-package com.github.eokasta.hologram;
+package com.github.eokasta.hologram.protocol;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 

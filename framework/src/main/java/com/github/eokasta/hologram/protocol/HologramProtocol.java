@@ -1,7 +1,8 @@
-package com.github.eokasta.hologram;
+package com.github.eokasta.hologram.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
@@ -169,8 +170,23 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
+    public static void registerPacketListener(@NotNull PacketAdapter packetListener) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
+    }
+
     protected static boolean isLegacyMinecraftVersion() {
         return MINECRAFT_MINOR_VERSION < 9;
+    }
+
+    protected static WrappedDataWatcher getDataWatcher(final Location location) {
+        Location target = location;
+
+        if (target == null) {
+            final World world = Bukkit.getWorlds().get(0);
+            target = new Location(world, 0, world.getMaxHeight(), 0, 0, 0);
+        }
+
+        return createDataWatcher(target);
     }
 
     private static void sendPacket(PacketContainer packet, Player target) {
@@ -179,18 +195,6 @@ public final class HologramProtocol {
         } catch (final InvocationTargetException e) {
             e.printStackTrace();
         }
-    }
-
-    static WrappedDataWatcher getDataWatcher(final Location location) {
-        Location target = location;
-
-        // use a dummy location if location wasn't set
-        if (target == null) {
-            final World world = Bukkit.getWorlds().get(0);
-            target = new Location(world, 0, world.getMaxHeight(), 0, 0, 0);
-        }
-
-        return createDataWatcher(target);
     }
 
     private static WrappedDataWatcher createDataWatcher(@NotNull Location location) {

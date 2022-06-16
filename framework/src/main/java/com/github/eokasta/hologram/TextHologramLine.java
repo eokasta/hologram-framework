@@ -1,5 +1,6 @@
 package com.github.eokasta.hologram;
 
+import com.github.eokasta.hologram.protocol.HologramProtocol;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
@@ -25,8 +26,6 @@ public class TextHologramLine extends DynamicHologramLine {
     protected void show(@NotNull Player player) {
         super.show(player);
         updateLine(player);
-
-        System.out.println("updating: " + text);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.github.eokasta.hologram;
 
+import com.github.eokasta.hologram.protocol.DataWatcherHolder;
+import com.github.eokasta.hologram.protocol.HologramProtocol;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

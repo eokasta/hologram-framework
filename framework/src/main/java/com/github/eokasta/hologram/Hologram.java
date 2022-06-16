@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -20,8 +21,11 @@ import java.util.stream.Collectors;
 @Getter
 public class Hologram {
 
-    private final Set<Player> invisibleTo = Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<Player> invisibleTo = Collections.newSetFromMap(new HashMap<>());
     private final List<AbstractHologramLine> lines;
+
+    @Setter
+    private HologramInteractHandler interactHandler;
 
     @Setter
     private Location location;
