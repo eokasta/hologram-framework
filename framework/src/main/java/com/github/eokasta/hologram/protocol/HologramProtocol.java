@@ -170,6 +170,36 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
+    public static void sendTeleportPacket(
+          int entityId,
+          @NotNull Player target,
+          @NotNull Location location
+    ) {
+        final PacketContainer packet =
+              ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+
+        packet.getIntegers().write(0, entityId);
+
+        if (isLegacyMinecraftVersion()) {
+            packet.getIntegers().write(1, (int) Math.floor(location.getX() * 32));
+            packet.getIntegers().write(2, (int) Math.floor(location.getY() * 32));
+            packet.getIntegers().write(3, (int) Math.floor(location.getZ() * 32));
+        } else {
+            packet.getDoubles().write(0, location.getX());
+            packet.getDoubles().write(1, location.getY());
+            packet.getDoubles().write(2, location.getZ());
+        }
+
+        packet.getBytes().write(0,
+              (byte) (location.getYaw() * 256.0F / 360.0F));
+        packet.getBytes().write(1,
+              (byte) (location.getPitch() * 256.0F / 360.0F));
+
+        packet.getBooleans().write(0, false);
+
+        sendPacket(packet, target);
+    }
+
     public static void registerPacketListener(@NotNull PacketAdapter packetListener) {
         ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
     }

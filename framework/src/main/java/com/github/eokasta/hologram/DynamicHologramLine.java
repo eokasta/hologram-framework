@@ -9,10 +9,10 @@ import java.util.function.BiFunction;
 
 abstract class DynamicHologramLine extends AbstractHologramLine {
 
-    @Setter(AccessLevel.PUBLIC)
+    @Setter
     protected BiFunction<AbstractHologramLine, Player, Object> function;
 
-    public DynamicHologramLine(@NotNull Hologram hologram, @NotNull HologramSettings settings, @NotNull float height) {
+    public DynamicHologramLine(@NotNull Hologram hologram, @NotNull HologramSettings settings, float height) {
         super(hologram, settings, height);
     }
 

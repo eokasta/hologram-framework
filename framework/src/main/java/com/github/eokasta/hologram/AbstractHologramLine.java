@@ -32,6 +32,31 @@ public abstract class AbstractHologramLine {
         HologramProtocol.sendSpawnPacket(entityId, location, player, new DataWatcherHolder());
     }
 
-    protected abstract void update(@NotNull Player player);
+    protected void teleportTo(@NotNull Player player, @NotNull Location location) {
+        if (location.equals(this.location)) return;
+
+        this.location = location;
+        HologramProtocol.sendTeleportPacket(entityId, player, location);
+    }
+
+    protected void onUpdate(@NotNull Player player) {
+
+    }
+
+    protected void update(@NotNull Player player) {
+        HologramProtocol.sendMetadataCreatePacket(
+              entityId,
+              player,
+              " ",
+              settings.isVisibleCustomName(),
+              settings.isVisibleArmorStand(),
+              settings.isSmall(),
+              settings.isArms(),
+              settings.isNoBasePlate(),
+              settings.isMarker()
+        );
+
+        onUpdate(player);
+    }
 
 }

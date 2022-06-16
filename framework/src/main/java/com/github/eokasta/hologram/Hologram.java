@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -130,6 +129,22 @@ public class Hologram {
               .forEach(this::hide);
 
         this.destroyed = true;
+        this.spawned = false;
+    }
+
+    public void teleportTo(@NotNull Location location) {
+        if (!spawned)
+            throw new IllegalStateException("Hologram needs to be spawned to teleport.");
+
+        setLocation(location);
+        final Location clonedLocation = location.clone();
+
+        getPlayersOnWorld().stream()
+              .filter(this::canSee)
+              .forEach(player -> {
+                  for (AbstractHologramLine line : lines)
+                      line.teleportTo(player, clonedLocation.add(0.0f, line.getHeight(), 0.0f).clone());
+              });
     }
 
     private void initializeLines(Location initialLocation) {
