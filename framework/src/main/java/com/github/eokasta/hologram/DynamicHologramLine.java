@@ -7,7 +7,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
-abstract class DynamicHologramLine extends AbstractHologramLine {
+/**
+ * This class is responsible for abstracting the dynamic lines of holograms.<p></p>
+ *
+ * The dynamic lines are independent for each {@link Player},
+ * their actions can change depending on their {@link java.util.function.Function}.
+ *
+ * @author Lucas Monteiro
+ * @see AbstractHologramLine
+ */
+public abstract class DynamicHologramLine extends AbstractHologramLine {
 
     @Setter
     protected BiFunction<AbstractHologramLine, Player, Object> function;

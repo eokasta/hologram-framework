@@ -12,12 +12,25 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * This class is the {@link Hologram} builder, making it easy to create.
+ */
 @NoArgsConstructor
 public class HologramBuilder {
 
     private final List<LineType> lines = new ArrayList<>();
     private final HologramInteractHandler hologramInteractHandler = new HologramInteractHandler();
 
+    /**
+     * Adds a new interaction with the hologram.
+     *
+     * @param action the {@link HologramInteractAction} type.
+     * @param consumer the consumer that will happen.
+     * @return this constructor.
+     * @see HologramInteractAction
+     * @see HologramInteractContext
+     * @see HologramInteractHandler
+     */
     public HologramBuilder addAction(
           @NotNull HologramInteractAction action,
           @NotNull Consumer<HologramInteractContext> consumer
@@ -26,32 +39,66 @@ public class HologramBuilder {
         return this;
     }
 
+    /**
+     * Adds a new left click interaction with the hologram.
+     *
+     * @param consumer the consumer that will happen.
+     * @return this constructor.
+     * @see HologramBuilder#addAction(HologramInteractAction, Consumer)
+     */
     public HologramBuilder addLeftClickAction(@NotNull Consumer<HologramInteractContext> consumer) {
         return addAction(HologramInteractAction.LEFT_CLICK, consumer);
     }
 
+    /**
+     * Adds a new right click interaction with the hologram.
+     *
+     * @param consumer the consumer that will happen.
+     * @return this constructor.
+     * @see HologramBuilder#addAction(HologramInteractAction, Consumer)
+     */
     public HologramBuilder addRightClickAction(@NotNull Consumer<HologramInteractContext> consumer) {
         return addAction(HologramInteractAction.RIGHT_CLICK, consumer);
     }
 
+    /**
+     * Adds a line of text to the hologram.
+     *
+     * @param text the text to be added.
+     * @return this constructor.
+     * @see TextHologramLine
+     */
     public HologramBuilder addLine(@NotNull String text) {
         addLine(text, String.class);
         return this;
     }
 
+    /**
+     * Adds a dynamic line to the hologram.
+     *
+     * @param function the dynamic line function for each player.
+     * @return this constructor.
+     * @see DynamicHologramLine
+     */
     public HologramBuilder addDynamicTextLine(@NotNull Function<Player, String> function) {
         return addLine(function, String.class);
     }
 
+    /**
+     * Adds a empty line to the hologram.
+     *
+     * @return this constructor.
+     * @see EmptyHologramLine
+     */
     public HologramBuilder addEmptyLine() {
         return addLine(null, null);
     }
 
-    private HologramBuilder addLine(@Nullable Object value, @Nullable Class<?> type) {
-        this.lines.add(new LineType(value, type));
-        return this;
-    }
-
+    /**
+     * Builds a new hologram with all settings.
+     *
+     * @return a {@link Hologram} instance.
+     */
     public Hologram build() {
         final List<AbstractHologramLine> lines = new ArrayList<>();
         final Hologram hologram = new Hologram(lines);
@@ -64,11 +111,21 @@ public class HologramBuilder {
         return hologram;
     }
 
+    /**
+     * Builds a new hologram with all settings and register on {@link HologramRegistry}.
+     *
+     * @return a {@link Hologram} instance.
+     */
     public Hologram build(@NotNull HologramRegistry registry) {
         final Hologram hologram = build();
         registry.registerHologram(hologram);
 
         return hologram;
+    }
+
+    private HologramBuilder addLine(@Nullable Object value, @Nullable Class<?> type) {
+        this.lines.add(new LineType(value, type));
+        return this;
     }
 
     @SuppressWarnings("unchecked")

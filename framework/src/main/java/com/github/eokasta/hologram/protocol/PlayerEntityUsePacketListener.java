@@ -11,6 +11,12 @@ import com.github.eokasta.hologram.HologramInteractAction;
 import com.github.eokasta.hologram.HologramInteractContext;
 import com.github.eokasta.hologram.HologramRegistry;
 
+/**
+ * This class is responsible for listening and filtering
+ * interaction packets with holograms using <a href="https://github.com/dmulloy2/ProtocolLib/">ProtocolLib</a>.
+ *
+ * @author Lucas Monteiro
+ */
 public class PlayerEntityUsePacketListener extends PacketAdapter {
 
     private final HologramRegistry registry;
@@ -28,7 +34,6 @@ public class PlayerEntityUsePacketListener extends PacketAdapter {
         if (hologramLine == null) return;
 
         final WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().read(0);
-//        final EnumWrappers.EntityUseAction entityUseAction = packet.getEntityUseActions().read(0);
         final HologramInteractAction action = useAction.getAction() == EnumWrappers.EntityUseAction.ATTACK ?
               HologramInteractAction.LEFT_CLICK :
               HologramInteractAction.RIGHT_CLICK;

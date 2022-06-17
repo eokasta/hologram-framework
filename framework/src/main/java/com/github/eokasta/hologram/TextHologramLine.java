@@ -8,6 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * This class is responsible for creating a line of texts in holograms.
+ *
+ * @author Lucas Monteiro
+ * @see DynamicHologramLine
+ */
 public class TextHologramLine extends DynamicHologramLine {
 
     @Getter

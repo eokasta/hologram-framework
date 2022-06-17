@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +91,14 @@ public class HologramRegistry implements Iterable<Hologram> {
 
                 hologram.show(player);
             }
+        }
+
+        @EventHandler
+        public void onQuit(PlayerQuitEvent event) {
+            final Player player = event.getPlayer();
+
+            for (Hologram hologram : getHolograms())
+                hologram.invalidatePlayer(player);
         }
 
     }

@@ -23,6 +23,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * This class is responsible for managing all sending of hologram
+ * packets using <a href="https://github.com/dmulloy2/ProtocolLib/">ProtocolLib</a>.
+ *
+ * @author Lucas Monteiro
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HologramProtocol {
 
@@ -36,6 +42,12 @@ public final class HologramProtocol {
         MINECRAFT_MINOR_VERSION = MinecraftVersion.getCurrentVersion().getMinor();
     }
 
+    /**
+     * Sends a packet to destroy an entity.
+     *
+     * @param entityId identify of the entity to be destroyed.
+     * @param target player who will receive the packet.
+     */
     public static void sendDestroyPacket(
           int entityId,
           @NotNull Player target
@@ -51,6 +63,14 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
+    /**
+     * Sends a packet to spawn an entity.
+     *
+     * @param entityId identify of the entity to be spawned.
+     * @param location location where the entity will be spawned.
+     * @param target player who will receive the packet.
+     * @param dataWatcherHolder DataWatcher holder.
+     */
     public static void sendSpawnPacket(
           int entityId,
           @NotNull Location location,
@@ -89,6 +109,19 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
+    /**
+     * Sends a packet to create/edit an entity's metadata.
+     *
+     * @param entityId identify of the entity to be spawned.
+     * @param target player who will receive the packet.
+     * @param customName armor stand entity custom name.
+     * @param visibleCustomName whether or not the armor stand will have a visible name.
+     * @param visibleArmorStand whether the armor support will be visible.
+     * @param small whether the armor stand will be small.
+     * @param arms whether the armor stand will have arms.
+     * @param noBasePlate whether the armor stand will have base plate removed.
+     * @param marker whether the armor support will have marker.
+     */
     public static void sendMetadataCreatePacket(
           int entityId,
           @NotNull Player target,
@@ -170,6 +203,13 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
+    /**
+     * Sends a packet to teleport an entity.
+     *
+     * @param entityId identify of the entity to be spawned.
+     * @param target player who will receive the packet.
+     * @param location the location where the entity will teleport to.
+     */
     public static void sendTeleportPacket(
           int entityId,
           @NotNull Player target,
@@ -200,25 +240,43 @@ public final class HologramProtocol {
         sendPacket(packet, target);
     }
 
-    public static void registerPacketListener(@NotNull PacketAdapter packetListener) {
-        ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
+    /**
+     * Register a new {@link PacketAdapter}.
+     *
+     * @param packetAdapter the {@link PacketAdapter} to register
+     */
+    public static void registerPacketListener(@NotNull PacketAdapter packetAdapter) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(packetAdapter);
     }
 
+    /**
+     * Checks if the server is on the legacy version.
+     *
+     * @return <b>true</b> if the server is running on a legacy version or <b>false</b> if running above 1.9.
+     */
     protected static boolean isLegacyMinecraftVersion() {
         return MINECRAFT_MINOR_VERSION < 9;
     }
 
-    protected static WrappedDataWatcher getDataWatcher(final Location location) {
-        Location target = location;
-
-        if (target == null) {
-            final World world = Bukkit.getWorlds().get(0);
-            target = new Location(world, 0, world.getMaxHeight(), 0, 0, 0);
-        }
+    /**
+     * Creates a new {@link WrappedDataWatcher}.
+     *
+     * @return a {@link WrappedDataWatcher}
+     * @see HologramProtocol#createDataWatcher(Location)
+     */
+    protected static WrappedDataWatcher getDataWatcher() {
+        final World world = Bukkit.getWorlds().get(0);
+        final Location target = new Location(world, 0, world.getMaxHeight(), 0, 0, 0);
 
         return createDataWatcher(target);
     }
 
+    /**
+     * Sends a packets to player.
+     *
+     * @param packet packet to be sent.
+     * @param target player who will receive the packet.
+     */
     private static void sendPacket(PacketContainer packet, Player target) {
         try {
             ProtocolLibrary.getProtocolManager().sendServerPacket(target, packet);
@@ -227,6 +285,11 @@ public final class HologramProtocol {
         }
     }
 
+    /**
+     * Creates a new {@link WrappedDataWatcher}.
+     *
+     * @return a {@link WrappedDataWatcher}
+     */
     private static WrappedDataWatcher createDataWatcher(@NotNull Location location) {
         final World world = Objects.requireNonNull(location.getWorld(), "The world of location is null.");
         final Entity entity = world.spawnEntity(location, EntityType.ARMOR_STAND);

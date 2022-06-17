@@ -10,6 +10,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class is responsible for abstracting the lines of holograms.
+ *
+ * @author Lucas Monteiro
+ */
 @Getter
 @RequiredArgsConstructor
 public abstract class AbstractHologramLine {
@@ -24,14 +29,30 @@ public abstract class AbstractHologramLine {
     @Setter(AccessLevel.PROTECTED)
     protected Location location;
 
+    /**
+     * Hides this hologram line.
+     *
+     * @param player player will no longer see this line.
+     */
     protected void hide(@NotNull Player player) {
         HologramProtocol.sendDestroyPacket(entityId, player);
     }
 
+    /**
+     * Shows this hologram line.
+     *
+     * @param player player who will see this line.
+     */
     protected void show(@NotNull Player player) {
         HologramProtocol.sendSpawnPacket(entityId, location, player, new DataWatcherHolder());
     }
 
+    /**
+     * Teleports this hologram line.
+     *
+     * @param player player who will receive the packet.
+     * @param location the location where the entity will teleport to.
+     */
     protected void teleportTo(@NotNull Player player, @NotNull Location location) {
         if (location.equals(this.location)) return;
 
@@ -39,10 +60,21 @@ public abstract class AbstractHologramLine {
         HologramProtocol.sendTeleportPacket(entityId, player, location);
     }
 
+    /**
+     * This method is called when this hologram line is updated.
+     *
+     * @param player player who will receive the update.
+     * @see AbstractHologramLine#update(Player)
+     */
     protected void onUpdate(@NotNull Player player) {
 
     }
 
+    /**
+     * Updates this hologram line.
+     *
+     * @param player player who will receive the update.
+     */
     protected void update(@NotNull Player player) {
         HologramProtocol.sendMetadataCreatePacket(
               entityId,

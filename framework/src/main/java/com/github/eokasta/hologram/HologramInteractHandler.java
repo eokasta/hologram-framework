@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ *
+ * @author Lucas Monteiro
+ */
 public class HologramInteractHandler {
 
     private final Map<HologramInteractAction, Consumer<HologramInteractContext>> actions = new HashMap<>();

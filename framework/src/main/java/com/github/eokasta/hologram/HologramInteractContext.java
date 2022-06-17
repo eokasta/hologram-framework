@@ -4,6 +4,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Lucas Monteiro
+ */
 @RequiredArgsConstructor
 @Getter
 public class HologramInteractContext {

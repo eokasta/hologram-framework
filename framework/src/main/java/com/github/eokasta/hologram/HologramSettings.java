@@ -3,6 +3,10 @@ package com.github.eokasta.hologram;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ *
+ * @author Lucas Monteiro
+ */
 @Builder
 @Getter
 public class HologramSettings {

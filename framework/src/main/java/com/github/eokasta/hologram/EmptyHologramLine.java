@@ -4,8 +4,12 @@ import com.github.eokasta.hologram.protocol.HologramProtocol;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
+/**
+ * This class is responsible for creating an empty line for texts in holograms.
+ *
+ * @author Lucas Monteiro
+ * @see DynamicHologramLine
+ */
 public class EmptyHologramLine extends DynamicHologramLine {
 
     public EmptyHologramLine(Hologram hologram) {
