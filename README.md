@@ -1,3 +1,6 @@
-# hologram-framework
+# Welcome to the hologram-framework wiki!
 
-Coming soon...
+The hologram-framework was made for study reasons and can be used by everyone.<p>
+If you encounter any problems and want to collaborate with the project, access [GitHub Issues](https://github.com/eokasta/hologram-framework/issues).
+
+Documentation available at [GitHub Wiki](https://github.com/eokasta/hologram-framework/wiki/).
