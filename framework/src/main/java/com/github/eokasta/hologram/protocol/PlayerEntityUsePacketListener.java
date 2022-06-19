@@ -33,10 +33,19 @@ public class PlayerEntityUsePacketListener extends PacketAdapter {
         final AbstractHologramLine hologramLine = registry.getHologramLine(entityId);
         if (hologramLine == null) return;
 
-        final WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().read(0);
-        final HologramInteractAction action = useAction.getAction() == EnumWrappers.EntityUseAction.ATTACK ?
-              HologramInteractAction.LEFT_CLICK :
-              HologramInteractAction.RIGHT_CLICK;
+
+        final HologramInteractAction action;
+        if (HologramProtocol.isLegacyMinecraftVersion()) {
+            final EnumWrappers.EntityUseAction read = packet.getEntityUseActions().read(0);
+            action = read == EnumWrappers.EntityUseAction.ATTACK ?
+                  HologramInteractAction.LEFT_CLICK :
+                  HologramInteractAction.RIGHT_CLICK;
+        } else {
+            final WrappedEnumEntityUseAction useAction = packet.getEnumEntityUseActions().read(0);
+            action = useAction.getAction() == EnumWrappers.EntityUseAction.ATTACK ?
+                  HologramInteractAction.LEFT_CLICK :
+                  HologramInteractAction.RIGHT_CLICK;
+        }
 
         final HologramInteractContext context = new HologramInteractContext(event.getPlayer(), hologramLine, action);
         hologramLine.getHologram().getInteractHandler().call(action, context);

@@ -81,7 +81,7 @@ public final class HologramProtocol {
 
         if (isLegacyMinecraftVersion()) {
             packet.getIntegers().write(0, entityId)
-                  .write(1, LEGACY_ENTITY_TYPE_ID)
+                  .write(1, (int) EntityType.ARMOR_STAND.getTypeId())
                   .write(2, (int) (location.getX() * 32))
                   .write(3, (int) (location.getY() * 32))
                   .write(4, (int) (location.getZ() * 32));
@@ -149,6 +149,9 @@ public final class HologramProtocol {
             if (small)
                 flags |= 0x01;
 
+//            if (gravity)
+//                flags |= 0x02;
+
             if (arms)
                 flags |= 0x04;
 
@@ -196,10 +199,9 @@ public final class HologramProtocol {
                   new WrappedDataWatcher.WrappedDataWatcherObject(15, WrappedDataWatcher.Registry.get(Byte.class)),
                   flags
             );
-
-            packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
         }
 
+        packet.getWatchableCollectionModifier().write(0, dataWatcher.getWatchableObjects());
         sendPacket(packet, target);
     }
 
@@ -254,7 +256,7 @@ public final class HologramProtocol {
      *
      * @return <b>true</b> if the server is running on a legacy version or <b>false</b> if running above 1.9.
      */
-    protected static boolean isLegacyMinecraftVersion() {
+    public static boolean isLegacyMinecraftVersion() {
         return MINECRAFT_MINOR_VERSION < 9;
     }
 
@@ -264,7 +266,7 @@ public final class HologramProtocol {
      * @return a {@link WrappedDataWatcher}
      * @see HologramProtocol#createDataWatcher(Location)
      */
-    protected static WrappedDataWatcher getDataWatcher() {
+    static WrappedDataWatcher getDataWatcher() {
         final World world = Bukkit.getWorlds().get(0);
         final Location target = new Location(world, 0, world.getMaxHeight(), 0, 0, 0);
 

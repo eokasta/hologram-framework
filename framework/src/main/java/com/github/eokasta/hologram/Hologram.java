@@ -1,8 +1,10 @@
 package com.github.eokasta.hologram;
 
+import com.github.eokasta.hologram.protocol.HologramProtocol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -140,7 +141,11 @@ public class Hologram {
 
         if (!locationWorld.equals(player.getWorld())) return false;
 
-        return location.distanceSquared(player.getLocation()) <= locationWorld.getViewDistance() * 500;
+        final int viewDistance = HologramProtocol.isLegacyMinecraftVersion() ?
+              Bukkit.getViewDistance() * 500 :
+              locationWorld.getViewDistance() * 500;
+
+        return location.distanceSquared(player.getLocation()) <= viewDistance;
     }
 
     /**
