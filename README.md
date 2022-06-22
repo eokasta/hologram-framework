@@ -1,4 +1,4 @@
-# Welcome to the hologram-framework!
+# hologram-framework
 
 Tested versions: `1.8` and `1.17`.
 
